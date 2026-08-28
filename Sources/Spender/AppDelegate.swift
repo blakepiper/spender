@@ -1,7 +1,7 @@
 import AppKit
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
     private var snapshot: UsageSnapshot?
     private var refreshTimer: Timer?
     private var refreshing = false
@@ -13,8 +13,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if let button = statusItem.button {
             button.image = NSImage(systemSymbolName: "dollarsign.circle", accessibilityDescription: "Spender")
             button.image?.isTemplate = true
-            button.imagePosition = .imageLeading
-            button.title = " —"
+            button.imagePosition = .imageOnly
+            button.title = ""
             button.toolTip = "Spender AI usage"
         }
         rebuildMenu()
@@ -95,10 +95,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func updateStatusItem() {
         guard let button = statusItem.button else { return }
         if let remaining = snapshot.flatMap({ UsageFormatting.menuBarRemaining($0.providers) }) {
-            button.title = " \(remaining)%"
             button.toolTip = "Spender · \(remaining)% left in the tightest quota"
         } else {
-            button.title = " —"
             button.toolTip = "Spender · live quota unavailable"
         }
     }

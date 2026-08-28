@@ -11,7 +11,7 @@ or daemon runtime dependency.
 
 - `~/Applications/Spender.app` launches as an agent app without a Dock icon.
 - A dollar-circle status item appears among the right-side macOS menu extras.
-- Its title shows the percentage left in the tightest available quota window.
+- Its menu-bar presence is a compact dollar-circle icon with no text label.
 - Clicking it shows Claude Code, OpenAI Codex, and OpenCode Go quota windows,
   resets, and local token/prompt/session statistics.
 - Provider loading never blocks the main UI thread.
@@ -56,8 +56,9 @@ user's Applications directory and launches it.
 ## Menu-bar application
 
 AppKit's `NSStatusBar.system.statusItem(withLength:)` creates the native status
-item. The button uses the `dollarsign.circle` SF Symbol plus the remaining
-percentage. `LSUIElement=true` suppresses Dock and application-switcher icons.
+item. The button uses only the `dollarsign.circle` SF Symbol; the tightest
+remaining percentage is available in its tooltip and menu. `LSUIElement=true`
+suppresses Dock and application-switcher icons.
 
 The menu is rebuilt when a snapshot, refresh state, or login-item state changes.
 It contains flat, readable provider sections followed by refresh, login,

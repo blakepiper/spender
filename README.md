@@ -24,10 +24,10 @@ launch-at-login registration on its first installed launch. If macOS requires
 approval, the menu shows **Launch at Login — Approval Required…**; select it to
 open the correct System Settings page.
 
-The menu-bar item uses a native dollar-circle symbol followed by the remaining
-percentage in the most-consumed available quota window. It appears with the
-other status items on the right side of the macOS menu bar. Hold Command and
-drag it to reposition it.
+The menu-bar item is a native dollar-circle symbol. It appears with the other
+status items on the right side of the macOS menu bar. Hold Command and drag it
+to reposition it. Hovering shows the remaining percentage in the most-consumed
+available quota window; full details remain inside the menu.
 
 ## Menu
 
