@@ -4,10 +4,12 @@ typealias JSONObject = [String: Any]
 
 enum SpenderError: LocalizedError {
     case message(String)
+    case http(Int)
 
     var errorDescription: String? {
         switch self {
         case .message(let value): return value
+        case .http(let status): return "HTTP \(status)"
         }
     }
 }
@@ -94,7 +96,7 @@ func httpJSON(_ request: URLRequest, timeout: TimeInterval) throws -> JSONObject
     }
     if let error = responseError { throw error }
     guard (200..<300).contains(statusCode), let data = responseData else {
-        throw SpenderError.message("HTTP \(statusCode)")
+        throw SpenderError.http(statusCode)
     }
     guard let object = try JSONSerialization.jsonObject(with: data) as? JSONObject else {
         throw SpenderError.message("invalid JSON response")

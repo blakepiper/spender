@@ -54,7 +54,8 @@ thread, so the menu bar stays responsive. A normal refresh uses the cache;
 
 ### Claude Code
 
-- Streams assistant usage records from `~/.claude/projects`.
+- Streams Claude Code usage from `~/.claude/projects` and Anthropic usage from
+  OMP sessions under `~/.omp/agent/sessions`.
 - Deduplicates message identifiers and aggregates local token history.
 - Reads the existing `Claude Code-credentials` login Keychain entry through
   macOS's system security tool, with `.credentials.json` as a fallback.
@@ -96,6 +97,7 @@ paths expand tildes and environment variables.
 | --- | --- |
 | Cache | `~/Library/Caches/spender/providers.json` |
 | Claude projects | `~/.claude/projects` |
+| OMP sessions for Claude | `~/.omp/agent/sessions` |
 | Claude credentials fallback | `~/.claude/.credentials.json` |
 | Claude Keychain service | `Claude Code-credentials` |
 | Codex home | `~/.codex` |
@@ -103,8 +105,8 @@ paths expand tildes and environment variables.
 | OpenCode database | `~/.local/share/opencode/opencode.db` |
 | OpenCode auth | `~/.local/share/opencode/auth.json` |
 
-`CLAUDE_CONFIG_DIR`, `CODEX_HOME`, and `SPENDER_CACHE_DIR` override their
-corresponding defaults when an explicit config value is absent. See
+`CLAUDE_CONFIG_DIR`, `OMP_HOME`, `CODEX_HOME`, and `SPENDER_CACHE_DIR` override
+their corresponding defaults when an explicit config value is absent. See
 [config.example.json](config.example.json) for every setting.
 
 ## Privacy and failure behavior

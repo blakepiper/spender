@@ -8,6 +8,7 @@ struct SpenderConfig {
 
     struct Claude {
         var projectsPath: String
+        var ompSessionsPath: String
         var credentialsPath: String
         var keychainService: String
         var keychainAccount: String
@@ -46,11 +47,13 @@ struct SpenderConfig {
         let home = FileManager.default.homeDirectoryForCurrentUser.path
         let claudeRoot = environment["CLAUDE_CONFIG_DIR"] ?? "\(home)/.claude"
         let codexRoot = environment["CODEX_HOME"] ?? "\(home)/.codex"
+        let ompRoot = environment["OMP_HOME"] ?? "\(home)/.omp"
         let cacheRoot = environment["SPENDER_CACHE_DIR"] ?? "\(home)/Library/Caches/spender"
         var result = SpenderConfig(
             cache: Cache(path: "\(cacheRoot)/providers.json", ttl: 300),
             claude: Claude(
                 projectsPath: "\(claudeRoot)/projects",
+                ompSessionsPath: "\(ompRoot)/agent/sessions",
                 credentialsPath: "\(claudeRoot)/.credentials.json",
                 keychainService: "Claude Code-credentials",
                 keychainAccount: NSUserName(),
@@ -82,6 +85,7 @@ struct SpenderConfig {
             }
             if let section = root["claude"] as? [String: Any] {
                 result.claude.projectsPath = string(section, "projects_path") ?? result.claude.projectsPath
+                result.claude.ompSessionsPath = string(section, "omp_sessions_path") ?? result.claude.ompSessionsPath
                 result.claude.credentialsPath = string(section, "credentials_path") ?? result.claude.credentialsPath
                 result.claude.keychainService = string(section, "keychain_service") ?? result.claude.keychainService
                 result.claude.keychainAccount = string(section, "keychain_account") ?? result.claude.keychainAccount
@@ -102,6 +106,7 @@ struct SpenderConfig {
 
         result.cache.path = expandPath(result.cache.path, environment: environment)
         result.claude.projectsPath = expandPath(result.claude.projectsPath, environment: environment)
+        result.claude.ompSessionsPath = expandPath(result.claude.ompSessionsPath, environment: environment)
         result.claude.credentialsPath = expandPath(result.claude.credentialsPath, environment: environment)
         result.codex.home = expandPath(result.codex.home, environment: environment)
         result.codex.piSessionsPath = expandPath(result.codex.piSessionsPath, environment: environment)

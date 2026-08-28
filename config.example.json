@@ -5,6 +5,7 @@
   },
   "claude": {
     "projects_path": "~/.claude/projects",
+    "omp_sessions_path": "~/.omp/agent/sessions",
     "credentials_path": "~/.claude/.credentials.json",
     "keychain_service": "Claude Code-credentials",
     "keychain_account": "",
