@@ -16,7 +16,14 @@ rm -rf "$app"
 mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
 cp "$root/.build/release/Spender" "$app/Contents/MacOS/Spender"
 cp "$root/App/Info.plist" "$app/Contents/Info.plist"
-cp "$root/App/Spender.icns" "$app/Contents/Resources/Spender.icns"
+xcrun actool \
+    --compile "$app/Contents/Resources" \
+    --platform macosx \
+    --minimum-deployment-target 13.0 \
+    --app-icon AppIcon \
+    --output-partial-info-plist "$root/build/asset-info.plist" \
+    "$root/App/Assets.xcassets"
+rm "$root/build/asset-info.plist"
 codesign --force --sign - --timestamp=none "$app"
 codesign --verify --strict "$app"
 echo "$app"

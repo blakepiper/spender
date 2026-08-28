@@ -9,7 +9,9 @@
     <key>CFBundleIdentifier</key>
     <string>com.blake.spender</string>
     <key>CFBundleIconFile</key>
-    <string>Spender.icns</string>
+    <string>AppIcon</string>
+    <key>CFBundleIconName</key>
+    <string>AppIcon</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
@@ -19,7 +21,7 @@
     <key>CFBundleShortVersionString</key>
     <string>0.2.0</string>
     <key>CFBundleVersion</key>
-    <string>3</string>
+    <string>5</string>
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
     <key>LSUIElement</key>

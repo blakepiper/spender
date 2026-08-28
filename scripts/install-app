@@ -7,15 +7,19 @@ source_app=$("$root/scripts/build-app" | tail -1)
 expected_source_app="$root/build/Spender.app"
 target_dir="$HOME/Applications"
 target_app="$target_dir/Spender.app"
+expected_target_app="$HOME/Applications/Spender.app"
 launch_services_register="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
 
-if [ "$source_app" != "$expected_source_app" ]; then
-    echo "Unexpected build output: $source_app" >&2
+if [ "$source_app" != "$expected_source_app" ] || [ "$target_app" != "$expected_target_app" ]; then
+    echo "Unexpected app path" >&2
     exit 1
 fi
 
 mkdir -p "$target_dir"
 /usr/bin/osascript -e 'tell application id "com.blake.spender" to quit' >/dev/null 2>&1 || true
+if [ -e "$target_app" ]; then
+    /bin/rm -R "$target_app"
+fi
 /usr/bin/ditto "$source_app" "$target_app"
 codesign --verify --strict "$target_app"
 "$launch_services_register" -f "$target_app"
