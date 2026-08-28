@@ -4,12 +4,19 @@ set -eu
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 root=$(CDPATH= cd -- "$script_dir/.." && pwd)
 source_app=$("$root/scripts/build-app" | tail -1)
+expected_source_app="$root/build/Spender.app"
 target_dir="$HOME/Applications"
 target_app="$target_dir/Spender.app"
+
+if [ "$source_app" != "$expected_source_app" ]; then
+    echo "Unexpected build output: $source_app" >&2
+    exit 1
+fi
 
 mkdir -p "$target_dir"
 /usr/bin/osascript -e 'tell application id "com.blake.spender" to quit' >/dev/null 2>&1 || true
 /usr/bin/ditto "$source_app" "$target_app"
 codesign --verify --strict "$target_app"
 open "$target_app"
+rm -rf "$source_app"
 echo "Installed and launched $target_app"

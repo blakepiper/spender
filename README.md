@@ -19,10 +19,11 @@ cd ~/spender
 ```
 
 This builds an optimized, ad-hoc-signed app, installs it at
-`~/Applications/Spender.app`, and launches it. Spender automatically requests
-launch-at-login registration on its first installed launch. If macOS requires
-approval, the menu shows **Launch at Login — Approval Required…**; select it to
-open the correct System Settings page.
+`~/Applications/Spender.app`, launches it, and removes the generated
+`build/Spender.app` copy. Spender automatically requests launch-at-login
+registration on its first installed launch. If macOS requires approval, the
+menu shows **Launch at Login — Approval Required…**; select it to open the
+correct System Settings page.
 
 The menu-bar item is a native dollar-circle symbol. It appears with the other
 status items on the right side of the macOS menu bar. Hold Command and drag it
