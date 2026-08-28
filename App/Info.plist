@@ -8,6 +8,8 @@
     <string>Spender</string>
     <key>CFBundleIdentifier</key>
     <string>com.blake.spender</string>
+    <key>CFBundleIconFile</key>
+    <string>Spender.icns</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>

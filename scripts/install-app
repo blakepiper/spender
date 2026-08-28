@@ -17,6 +17,6 @@ mkdir -p "$target_dir"
 /usr/bin/osascript -e 'tell application id "com.blake.spender" to quit' >/dev/null 2>&1 || true
 /usr/bin/ditto "$source_app" "$target_app"
 codesign --verify --strict "$target_app"
-open "$target_app"
+open -n "$target_app"
 rm -rf "$source_app"
 echo "Installed and launched $target_app"

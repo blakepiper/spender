@@ -1,5 +1,7 @@
 # Spender
 
+<img src="logo.png" alt="Spender logo" width="220">
+
 Spender is a standalone native macOS menu-bar app for AI subscription usage. It
 shows live quota percentages and reset times alongside local token, prompt, and
 session statistics for:
