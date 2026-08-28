@@ -1,96 +1,93 @@
 # Spender
 
-Spender is a macOS menu-bar monitor for AI subscription usage. It shows live
-quota percentages and reset times alongside local token, prompt, and session
-statistics for Claude Code, OpenAI Codex, and OpenCode Go.
+Spender is a standalone native macOS menu-bar app for AI subscription usage. It
+shows live quota percentages and reset times alongside local token, prompt, and
+session statistics for:
 
-The first UI is a [SwiftBar](https://github.com/swiftbar/SwiftBar) plugin. The
-provider and caching logic is a separate, standard-library-only Python package,
-so it can also be used from Terminal or by a future native UI.
+- Claude Code
+- OpenAI Codex
+- OpenCode Go
 
-## What it shows
+It runs directly in the system menu bar with no Dock icon, SwiftBar, Python
+runtime, daemon, or third-party package dependencies.
 
-- The menu-bar title is the remaining percentage in the most-consumed available
-  quota window.
-- Claude Code: five-hour and weekly quota, plus local project JSONL history.
-- OpenAI Codex: available account quota windows, plus native Codex and optional
-  pi agent session history.
-- OpenCode Go: five-hour, weekly, and monthly quota, plus local SQLite history.
-- Each provider includes today's tokens, completed responses (shown as prompts),
-  and sessions.
-
-Token totals preserve the Blix scanner behavior: input, output, cache-read, and
-cache-creation tokens are included. "Prompts" counts assistant responses that
-contain usage data; it is a practical local proxy rather than a count supplied
-by the provider.
-
-## Requirements
-
-- macOS
-- `/usr/bin/python3` (the system/Xcode Python 3.9 or newer)
-- The provider CLIs/apps you want to monitor, signed in locally
-- SwiftBar for the menu-bar UI
-
-Spender has no Python package dependencies. SwiftBar can be installed with:
-
-```sh
-brew install swiftbar
-```
-
-On first launch, SwiftBar asks you to choose a plugin folder. Its plugin naming
-convention uses the filename to set refresh cadence, so Spender's launcher is
-named `spender.5m.py`.
-
-## Install the SwiftBar plugin
-
-Clone or keep this repository at a stable location, then pass your chosen
-SwiftBar plugin folder to the installer:
+## Install and launch
 
 ```sh
 cd ~/spender
-./scripts/install-swiftbar "$HOME/Documents/SwiftBar"
+./scripts/install-app
 ```
 
-The installer creates a symlink to `swiftbar/spender.5m.py`; it refuses to
-replace an existing plugin. If your SwiftBar folder is elsewhere, use that path
-instead. Open or refresh SwiftBar after installation.
+This builds an optimized, ad-hoc-signed app, installs it at
+`~/Applications/Spender.app`, and launches it. Spender automatically requests
+launch-at-login registration on its first installed launch. If macOS requires
+approval, the menu shows **Launch at Login — Approval Required…**; select it to
+open the correct System Settings page.
 
-The repository is intentionally not used as the entire SwiftBar plugin folder:
-SwiftBar scans plugin folders recursively, while only the launcher is a plugin.
+The menu-bar item uses a native dollar-circle symbol followed by the remaining
+percentage in the most-consumed available quota window. It appears with the
+other status items on the right side of the macOS menu bar. Hold Command and
+drag it to reposition it.
 
-## Terminal usage
+## Menu
 
-```sh
-# Readable provider details (uses a fresh cache when available)
-bin/spender status
+Click Spender's menu-bar item to see:
 
-# Normalized data for another UI or integration
-bin/spender json
+- Each provider and signed-in tier
+- Every available quota window with used/remaining percentages
+- Relative and local reset times
+- Today's local tokens, completed responses (shown as prompts), and sessions
+- Refresh status and snapshot age
+- **Refresh Now**
+- **Launch at Login**
+- **Open Configuration Folder**
+- **Quit Spender**
 
-# Bypass the cache and query all providers now
-bin/spender --refresh status
+The app refreshes every five minutes. Provider collection runs off the main
+thread, so the menu bar stays responsive. A normal refresh uses the cache;
+**Refresh Now** bypasses it.
 
-# Preview exactly what SwiftBar parses
-bin/spender swiftbar
-```
+## Provider behavior
 
-The default cache TTL is five minutes. Refreshing from Spender's SwiftBar menu
-bypasses the cache; ordinary scheduled runs reuse it.
+### Claude Code
+
+- Streams assistant usage records from `~/.claude/projects`.
+- Deduplicates message identifiers and aggregates local token history.
+- Reads the existing `Claude Code-credentials` login Keychain entry through
+  macOS's system security tool, with `.credentials.json` as a fallback.
+- Fetches five-hour and weekly OAuth quota windows.
+
+### OpenAI Codex
+
+- Streams recent native and archived Codex session JSONL.
+- Optionally includes pi agent sessions using the `openai-codex` provider.
+- Preserves cached-input accounting without double counting.
+- Uses the locally installed `codex app-server` JSON-RPC interface for account
+  and quota information. No Codex token is read or cached.
+
+### OpenCode Go
+
+- Opens OpenCode's SQLite database read-only.
+- Aggregates completed `opencode-go` assistant messages.
+- Uses the existing OpenCode Go key only for its live usage request.
+- Shows rolling five-hour, weekly, and monthly windows.
+
+Token totals include input, output, cache-read, and cache-creation tokens.
+"Prompts" counts completed assistant responses containing usage data, matching
+the original Blix provider logic.
 
 ## Configuration
 
-No configuration file is required for the normal macOS locations. To customize
-paths, copy the example:
+No configuration file is required for normal macOS paths. To customize paths:
 
 ```sh
 mkdir -p "$HOME/Library/Application Support/spender"
 cp config.example.json "$HOME/Library/Application Support/spender/config.json"
 ```
 
-The default config path can be changed with `SPENDER_CONFIG` or `--config PATH`.
-Tildes and environment variables in configured paths are expanded.
-
-Defaults:
+The menu's **Open Configuration Folder** command opens this location. The
+default configuration can also be changed with `SPENDER_CONFIG`, and configured
+paths expand tildes and environment variables.
 
 | Setting | Default |
 | --- | --- |
@@ -104,69 +101,38 @@ Defaults:
 | OpenCode auth | `~/.local/share/opencode/auth.json` |
 
 `CLAUDE_CONFIG_DIR`, `CODEX_HOME`, and `SPENDER_CACHE_DIR` override their
-corresponding defaults when an explicit value is not present in Spender's config.
-See [config.example.json](config.example.json) for every setting.
+corresponding defaults when an explicit config value is absent. See
+[config.example.json](config.example.json) for every setting.
 
-## Credentials and privacy
+## Privacy and failure behavior
 
-Spender only reads existing local sign-in state:
+Spender stores only aggregate usage statistics, quota values, and reset times.
+Its mode-`0600` cache never contains access tokens, API keys, account email
+addresses, or conversation content.
 
-- On macOS, Claude OAuth JSON is read from the login Keychain service
-  `Claude Code-credentials`. The configured credentials file is a fallback.
-- Codex account limits are requested from the locally installed `codex
-  app-server`; Spender does not read or store the Codex access token.
-- The OpenCode Go API key is read from its auth JSON only for the usage request.
-
-You may see a macOS Keychain access prompt the first time SwiftBar runs Spender.
-The cache contains aggregate usage statistics and quota values, never access
-tokens, API keys, account email addresses, or raw conversation content. Cache
-files are created with mode `0600`.
-
-## Failure behavior
-
-Providers are collected independently. A missing CLI, unavailable endpoint, or
-unreadable local database is shown inside that provider's section and does not
-remove the other providers. Local statistics remain visible when only a live
-quota call fails. If a provider scanner crashes during refresh, a usable prior
-provider result can be retained and marked stale.
-
-For a direct diagnostic run:
-
-```sh
-cd ~/spender
-bin/spender --refresh status
-```
-
-Common checks:
-
-- A `💸 —` header means no provider returned a live quota percentage; inspect
-  the provider messages in the menu or Terminal output.
-- If Claude has local stats but no quota, confirm Claude Code is signed in and
-  allow Keychain access when macOS asks.
-- If Codex has local stats but no quota, ensure `codex` is installed and signed
-  in. Set `codex.command` to an absolute path if it is outside the standard
-  Homebrew/user locations.
-- If OpenCode Go has no local stats, verify the configured database/auth paths.
+Providers refresh independently. A missing CLI, unavailable endpoint, or
+unreadable data source is reported within that provider without hiding the
+others. Local statistics remain visible when only a live quota request fails.
 
 ## Development
 
-Run the dependency-free test suite and syntax checks with the system Python:
+Requirements: macOS 13 or later and Xcode/Swift 6.
 
 ```sh
-/usr/bin/python3 -m unittest discover -s tests -v
-/usr/bin/python3 -m compileall -q spender bin swiftbar tests
-git diff --check
+# Unit tests
+swift test
+
+# Build an app bundle at build/Spender.app
+./scripts/build-app
+
+# Exercise all native providers without launching the UI
+.build/release/Spender --json --refresh
 ```
 
-The detailed design, data contract, and acceptance criteria are in
-[PLAN.md](PLAN.md).
+The bundle is an agent app (`LSUIElement=true`), so it intentionally has no Dock
+or application-switcher icon. It uses AppKit's `NSStatusItem` for the system
+menu bar. Signed builds use `SMAppService.mainApp` for launch at login; ad-hoc
+personal builds fall back to a per-user LaunchAgent because Service Management
+requires a signing identity that is not present on every development Mac.
 
-## Project layout
-
-```text
-bin/spender                 Terminal entry point
-spender/                    Config, cache, aggregation, formatting, providers
-swiftbar/spender.5m.py      SwiftBar launcher
-scripts/install-swiftbar    Symlink installer for a chosen plugin folder
-tests/                      Local fixtures and protocol/format tests
-```
+See [PLAN.md](PLAN.md) for the detailed architecture and acceptance criteria.
