@@ -1,0 +1,24 @@
+{
+  "cache": {
+    "path": "~/Library/Caches/spender/providers.json",
+    "ttl_seconds": 300
+  },
+  "claude": {
+    "projects_path": "~/.claude/projects",
+    "credentials_path": "~/.claude/.credentials.json",
+    "keychain_service": "Claude Code-credentials",
+    "keychain_account": "",
+    "usage_url": "https://api.anthropic.com/api/oauth/usage"
+  },
+  "codex": {
+    "home": "~/.codex",
+    "pi_sessions_path": "~/.pi/agent/sessions",
+    "command": "codex",
+    "history_days": 30
+  },
+  "opencode_go": {
+    "database_path": "~/.local/share/opencode/opencode.db",
+    "auth_path": "~/.local/share/opencode/auth.json",
+    "usage_url": "https://opencode.ai/zen/go/v1/usage"
+  }
+}
